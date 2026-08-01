@@ -42,7 +42,8 @@ def chat():
 
     except Exception as e:
         print("Error details:", str(e))
-        return jsonify({"response": f"කණගාටුයි, Azure OpenAI Service එක සම්බන්ධ කරගැනීමේ දෝෂයක් සිදු වුණා."})
+        # Exact Exception message එක UI එකට Return කිරීම
+        return jsonify({"response": f"Error: {str(e)}"})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
