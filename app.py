@@ -1,21 +1,21 @@
 from flask import Flask, render_template, request, jsonify
-from openai import OpenAI
+from azure.ai.inference import ChatCompletionsClient
+from azure.core.credentials import AzureKeyCredential
 import os
 
 app = Flask(__name__)
 
-# Azure AI Foundry Target Endpoint සහ Key (Managed Deployment එක සඳහා)
-# Screenshot එකට අනුව Target Endpoint base URL එක:
-AZURE_OPENAI_ENDPOINT = os.getenv(
+# Azure AI Foundry Endpoint එක (v1 කෑලි නැතුව Endpoint URL එක)
+ENDPOINT = os.getenv(
     "AZURE_OPENAI_ENDPOINT", 
-    "https://nirashasathmini-4408-resource.services.ai.azure.com/managed-deployments/gpt-4o-mini/v1"
+    "https://nirashasathmini-4408-resource.services.ai.azure.com/managed-deployments/gpt-4o-mini"
 )
-AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
+API_KEY = os.getenv("AZURE_OPENAI_KEY")
 
-# OpenAI Base Client එක initialize කිරීම (Managed Endpoint v1 path එකට)
-client = OpenAI(
-    base_url=AZURE_OPENAI_ENDPOINT,
-    api_key=AZURE_OPENAI_KEY
+# Official Azure Inference Client එක initialize කිරීම
+client = ChatCompletionsClient(
+    endpoint=ENDPOINT,
+    credential=AzureKeyCredential(API_KEY)
 )
 
 @app.route('/')
@@ -30,9 +30,7 @@ def chat():
         return jsonify({"response": "කරුණාකර පණිවිඩයක් ඇතුළත් කරන්න."})
 
     try:
-        # Request එක යැවීම (model parameter එක 'gpt-4o-mini' ලෙස pass කරන්න)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        response = client.complete(
             messages=[
                 {"role": "system", "content": "You are a helpful AI assistant hosted on Microsoft Azure."},
                 {"role": "user", "content": user_message}

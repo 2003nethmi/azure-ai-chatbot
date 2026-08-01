@@ -1,5 +1,4 @@
 flask
-openai>=1.12.0
-httpx>=0.27.0
+azure-ai-inference
 gunicorn
 python-dotenv
