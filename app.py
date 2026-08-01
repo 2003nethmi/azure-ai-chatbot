@@ -1,19 +1,21 @@
 from flask import Flask, render_template, request, jsonify
-from openai import AzureOpenAI
+from openai import OpenAI
 import os
 
 app = Flask(__name__)
 
-# Azure OpenAI Base Endpoint (අගට /openai/v1... කෑලි නැතුව)
-AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://nirashasathmini-4408-resource.services.ai.azure.com/openai/v1/chat/completions")
+# Azure AI Foundry Target Endpoint සහ Key (Managed Deployment එක සඳහා)
+# Screenshot එකට අනුව Target Endpoint base URL එක:
+AZURE_OPENAI_ENDPOINT = os.getenv(
+    "AZURE_OPENAI_ENDPOINT", 
+    "https://nirashasathmini-4408-resource.services.ai.azure.com/managed-deployments/gpt-4o-mini/v1"
+)
 AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
-DEPLOYMENT_NAME = os.getenv("DEPLOYMENT_NAME", "gpt-4o-mini")
 
-# Azure OpenAI Client initialize කිරීම
-client = AzureOpenAI(
-    azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    api_key=AZURE_OPENAI_KEY,
-    api_version="2024-02-15-preview"
+# OpenAI Base Client එක initialize කිරීම (Managed Endpoint v1 path එකට)
+client = OpenAI(
+    base_url=AZURE_OPENAI_ENDPOINT,
+    api_key=AZURE_OPENAI_KEY
 )
 
 @app.route('/')
@@ -28,8 +30,9 @@ def chat():
         return jsonify({"response": "කරුණාකර පණිවිඩයක් ඇතුළත් කරන්න."})
 
     try:
+        # Request එක යැවීම (model parameter එක 'gpt-4o-mini' ලෙස pass කරන්න)
         response = client.chat.completions.create(
-            model=DEPLOYMENT_NAME,
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a helpful AI assistant hosted on Microsoft Azure."},
                 {"role": "user", "content": user_message}
@@ -42,7 +45,6 @@ def chat():
 
     except Exception as e:
         print("Error details:", str(e))
-        # Exact Exception message එක UI එකට Return කිරීම
         return jsonify({"response": f"Error: {str(e)}"})
 
 if __name__ == '__main__':
