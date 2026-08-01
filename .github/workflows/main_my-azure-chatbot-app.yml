@@ -48,4 +48,4 @@ jobs:
         with:
           app-name: 'my-azure-chatbot-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREWEBAPPS_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_978B737097AF4F2DA1C587275127E83A }}
