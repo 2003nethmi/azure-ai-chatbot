@@ -4,12 +4,12 @@ import os
 
 app = Flask(__name__)
 
-# Azure OpenAI Credentials (Environment Variables හරහා ලබා ගනී)
-AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://nirashasathmini-4408-resource.services.ai.azure.com/openai/v1/chat/completions")
+# Azure OpenAI Base Endpoint (අගට /openai/v1... කෑලි නැතුව)
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://nirashasathmini-4408-resource.services.ai.azure.com/")
 AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
 DEPLOYMENT_NAME = os.getenv("DEPLOYMENT_NAME", "gpt-4o-mini")
 
-# Azure OpenAI Client එක initialize කිරීම
+# Azure OpenAI Client initialize කිරීම
 client = AzureOpenAI(
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
     api_key=AZURE_OPENAI_KEY,
@@ -28,7 +28,6 @@ def chat():
         return jsonify({"response": "කරුණාකර පණිවිඩයක් ඇතුළත් කරන්න."})
 
     try:
-        # Azure OpenAI API එකට Request එක යැවීම
         response = client.chat.completions.create(
             model=DEPLOYMENT_NAME,
             messages=[
@@ -42,8 +41,9 @@ def chat():
         return jsonify({"response": bot_response})
 
     except Exception as e:
-        print("Error:", str(e))
-        return jsonify({"response": "කණගාටුයි, Azure OpenAI Service එක සම්බන්ධ කරගැනීමේ දෝෂයක් සිදු වුණා."})
+        print("Error details:", str(e))
+        return jsonify({"response": f"කණගාටුයි, Azure OpenAI Service එක සම්බන්ධ කරගැනීමේ දෝෂයක් සිදු වුණා."})
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
