@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # Azure OpenAI Base Endpoint (අගට /openai/v1... කෑලි නැතුව)
-AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://nirashasathmini-4408-resource.services.ai.azure.com/")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://nirashasathmini-4408-resource.services.ai.azure.com/openai/v1/chat/completions")
 AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
 DEPLOYMENT_NAME = os.getenv("DEPLOYMENT_NAME", "gpt-4o-mini")
 
